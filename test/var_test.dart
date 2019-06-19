@@ -399,28 +399,14 @@ void undefinedVars() {
   background: ;
 }''';
 
-  var errorStrings = [
-    'error on line 5, column 14: Variable is not defined.\n'
-        '  var-a: var(b);\n'
-        '             ^^',
-    'error on line 6, column 14: Variable is not defined.\n'
-        '  var-b: var(c);\n'
-        '             ^^',
-    'error on line 9, column 16: Variable is not defined.\n'
-        '  var-one: var(two);\n'
-        '               ^^^^',
-    'error on line 12, column 17: Variable is not defined.\n'
-        '  var-four: var(five);\n'
-        '                ^^^^^',
-    'error on line 13, column 17: Variable is not defined.\n'
-        '  var-five: var(six);\n'
-        '                ^^^^',
-    'error on line 16, column 18: Variable is not defined.\n'
-        '  var-def-1: var(def-2);\n'
-        '                 ^^^^^^',
-    'error on line 17, column 18: Variable is not defined.\n'
-        '  var-def-2: var(def-3);\n'
-        '                 ^^^^^^',
+  final awaitingErrors = [
+    ErrorMeta.oneLine(5, 14, 16),
+    ErrorMeta.oneLine(6, 14, 16),
+    ErrorMeta.oneLine(9, 16, 20),
+    ErrorMeta.oneLine(12, 17, 22),
+    ErrorMeta.oneLine(13, 17, 21),
+    ErrorMeta.oneLine(16, 18, 24),
+    ErrorMeta.oneLine(17, 18, 24),
   ];
 
   var generated = r'''
@@ -459,21 +445,20 @@ void undefinedVars() {
 
   expect(stylesheet != null, true);
 
-  expect(errors.length, errorStrings.length, reason: errors.toString());
+  expect(errors.length, awaitingErrors.length, reason: errors.toString());
   testBitMap = 0;
 
   outer:
-  for (var error in errors) {
-    var errorString = error.toString();
-    for (int i = 0; i < errorStrings.length; i++) {
-      if (errorString == errorStrings[i]) {
+  for (final error in errors) {
+    for (int i = 0; i < awaitingErrors.length; i++) {
+      if (awaitingErrors[i].similarTo(error)) {
         testBitMap |= 1 << i;
         continue outer;
       }
     }
-    fail("Unexpected error string: $errorString");
+    fail("Unexpected error string: ${error.toString()}");
   }
-  expect(testBitMap, equals((1 << errorStrings.length) - 1));
+  expect(testBitMap, equals((1 << awaitingErrors.length) - 1));
   expect(prettyPrint(stylesheet), generatedPolyfill);
 }
 

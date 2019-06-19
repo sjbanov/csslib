@@ -21,12 +21,9 @@ void testUnsupportedFontWeights() {
   var stylesheet = parseCss(input, errors: errors);
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 24: Unknown property value bolder
-.foobar { font-weight: bolder; }
-                       ^^^^^^''');
-  expect(stylesheet != null, true);
+  expectError(ErrorMeta.oneLine(1, 24, 30), errors[0]);
 
+  expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
 .foobar {
   font-weight: bolder;
@@ -38,10 +35,8 @@ error on line 1, column 24: Unknown property value bolder
   stylesheet = parseCss(input, errors: errors..clear());
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 24: Unknown property value lighter
-.foobar { font-weight: lighter; }
-                       ^^^^^^^''');
+  expectError(ErrorMeta.oneLine(1, 24, 31), errors[0]);
+
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
 .foobar {
@@ -54,10 +49,8 @@ error on line 1, column 24: Unknown property value lighter
   stylesheet = parseCss(input, errors: errors..clear());
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 24: Unknown property value inherit
-.foobar { font-weight: inherit; }
-                       ^^^^^^^''');
+  expectError(ErrorMeta.oneLine(1, 24, 31), errors[0]);
+
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
 .foobar {
@@ -77,10 +70,8 @@ void testUnsupportedLineHeights() {
   var stylesheet = parseCss(input, errors: errors);
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 24: Unexpected value for line-height
-.foobar { line-height: 120%; }
-                       ^^^''');
+  expectError(ErrorMeta.oneLine(1, 24, 27), errors[0]);
+
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
 .foobar {
@@ -93,10 +84,8 @@ error on line 1, column 24: Unexpected value for line-height
   stylesheet = parseCss(input, errors: errors..clear());
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 24: Unexpected unit for line-height
-.foobar { line-height: 20cm; }
-                       ^^''');
+  expectError(ErrorMeta.oneLine(1, 24, 26), errors[0]);
+
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
 .foobar {
@@ -109,10 +98,8 @@ error on line 1, column 24: Unexpected unit for line-height
   stylesheet = parseCss(input, errors: errors..clear());
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 24: Unknown property value inherit
-.foobar { line-height: inherit; }
-                       ^^^^^^^''');
+  expectError(ErrorMeta.oneLine(1, 24, 31), errors[0]);
+
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
 .foobar {
@@ -129,10 +116,8 @@ void testBadSelectors() {
   var stylesheet = parseCss(input, errors: errors);
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 1: Not a valid ID selector expected #id
-# foo { color: #ff00ff; }
-^''');
+  expectError(ErrorMeta.oneLine(1, 1, 2), errors[0]);
+
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
 # foo {
@@ -144,10 +129,8 @@ error on line 1, column 1: Not a valid ID selector expected #id
   stylesheet = parseCss(input, errors: errors..clear());
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 1: Not a valid class selector expected .className
-. foo { color: #ff00ff; }
-^''');
+  expectError(ErrorMeta.oneLine(1, 1, 2), errors[0]);
+
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
 . foo {
@@ -164,10 +147,8 @@ void testBadHexValues() {
   var stylesheet = parseCss(input, errors: errors);
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 18: Bad hex number
-.foobar { color: #AH787; }
-                 ^^^^^^''');
+  expectError(ErrorMeta.oneLine(1, 18, 24), errors[0]);
+
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
 .foobar {
@@ -179,10 +160,7 @@ error on line 1, column 18: Bad hex number
   stylesheet = parseCss(input, errors: errors..clear());
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 18: Unknown property value redder
-.foobar { color: redder; }
-                 ^^^^^^''');
+  expectError(ErrorMeta.oneLine(1, 18, 24), errors[0]);
 
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
@@ -195,10 +173,7 @@ error on line 1, column 18: Unknown property value redder
   stylesheet = parseCss(input, errors: errors..clear());
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 18: Expected hex number
-.foobar { color: # ffffff; }
-                 ^''');
+  expectError(ErrorMeta.oneLine(1, 18, 19), errors[0]);
 
   expect(stylesheet != null, true);
   expect(prettyPrint(stylesheet), r'''
@@ -211,10 +186,7 @@ error on line 1, column 18: Expected hex number
   stylesheet = parseCss(input, errors: errors..clear());
 
   expect(errors.isEmpty, false);
-  expect(errors[0].toString(), r'''
-error on line 1, column 18: Expected hex number
-.foobar { color: # 123fff; }
-                 ^''');
+  expectError(ErrorMeta.oneLine(1, 18, 19), errors[0]);
 
   expect(stylesheet != null, true);
 
@@ -237,12 +209,7 @@ void testBadUnicode() {
   parseCss(input, errors: errors);
 
   expect(errors.isEmpty, false);
-  expect(
-      errors[0].toString(),
-      'error on line 3, column 20: unicode first range can not be greater than '
-      'last\n'
-      '  unicode-range: U+400-200;\n'
-      '                   ^^^^^^^');
+  expectError(ErrorMeta.oneLine(3, 20, 27), errors[0]);
 
   final String input2 = '''
 @font-face {
@@ -253,11 +220,7 @@ void testBadUnicode() {
   parseCss(input2, errors: errors..clear());
 
   expect(errors.isEmpty, false);
-  expect(
-      errors[0].toString(),
-      'error on line 3, column 20: unicode range must be less than 10FFFF\n'
-      '  unicode-range: U+12FFFF;\n'
-      '                   ^^^^^^');
+  expectError(ErrorMeta.oneLine(3, 20, 26), errors[0]);
 }
 
 void testBadNesting() {

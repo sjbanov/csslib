@@ -76,19 +76,11 @@ void testSelectorFailures() {
   // Test for invalid class name (can't start with number).
   selector('.foobar .1a-story .xyzzy', errors: errors);
   expect(errors.isEmpty, false);
-  expect(
-      errors[0].toString(),
-      'error on line 1, column 9: name must start with a alpha character, but '
-      'found a number\n'
-      '.foobar .1a-story .xyzzy\n'
-      '        ^^');
+  expectError(ErrorMeta.oneLine(1, 9, 11), errors[0]);
 
   selector(':host()', errors: errors..clear());
-  expect(
-      errors.first.toString(),
-      'error on line 1, column 7: expected a selector argument, but found )\n'
-      ':host()\n'
-      '      ^');
+  expect(errors.isEmpty, false);
+  expectError(ErrorMeta.oneLine(1, 7, 8), errors.first);
 }
 
 main() {

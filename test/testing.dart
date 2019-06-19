@@ -9,6 +9,7 @@ import 'package:csslib/parser.dart';
 import 'package:csslib/visitor.dart';
 import 'package:csslib/src/messages.dart';
 import 'package:csslib/src/options.dart';
+import 'package:test/test.dart';
 
 export 'package:csslib/src/options.dart';
 
@@ -86,3 +87,54 @@ void walkTree(StyleSheet ss) {
 }
 
 String dumpTree(StyleSheet ss) => treeToDebugString(ss);
+
+void expectError(ErrorMeta expectedError, message) {
+  expect(expectedError.similarTo(message), isTrue, reason: expectedError.diff(message));
+}
+
+class ErrorMeta {
+  final _SpanMeta start;
+  final _SpanMeta end;
+
+  ErrorMeta({this.start, this.end});
+
+  factory ErrorMeta.oneLine(int line, int columnStart, int columnEnd) {
+    return ErrorMeta(
+      start: _SpanMeta(line: line, column: columnStart),
+      end: _SpanMeta(line: line, column: columnEnd),
+    );
+  }
+
+  bool similarTo(Message message) {
+    return start.line == message.span.start.line + 1 &&
+        start.column == message.span.start.column + 1 &&
+        end.line == message.span.end.line + 1 &&
+        end.column == message.span.end.column + 1;
+  }
+
+  String diff(Message message) {
+    return 'Expected hightlight '
+        '${_spanStringify(start.line, end.line, start.column, end.column)}\n'
+        'but found ${_spanStringify(
+            message.span.start.line + 1,
+            message.span.end.line + 1,
+            message.span.start.column + 1,
+            message.span.end.column + 1)}\n'
+        '${message.toString()}';
+  }
+
+  String _spanStringify(int lineStart, int lineEnd, columnStart, columnEnd) {
+    if (lineStart == lineEnd) {
+      return 'on line ${lineStart} from column ${columnStart} to ${columnEnd}';
+    } else {
+      return 'from line ${lineStart} column ${columnStart} to line ${lineEnd} column ${columnEnd}';
+    }
+  }
+}
+
+class _SpanMeta {
+  final int line;
+  final int column;
+
+  _SpanMeta({this.line, this.column});
+}
